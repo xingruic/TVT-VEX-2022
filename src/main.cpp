@@ -59,6 +59,9 @@ void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
+  Pneu1.set(true);
+  Pneu2.set(true);
+
   MotorOut.setBrake(brake);
 
   MotorLF.setVelocity(50, percent);
@@ -68,9 +71,6 @@ void pre_auton(void) {
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
-
-  Pneu1.set(true);
-  Pneu2.set(true);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -84,8 +84,6 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  Pneu1.set(true);
-  Pneu2.set(true);
 
   // auton::Half2();
 
@@ -158,9 +156,6 @@ void usercontrol(void) {
   // User control code here, inside the loop
 
   Controller1.ButtonA.pressed(fireRing);
-
-  Pneu1.set(true);
-  Pneu2.set(true);
 
   while (1) {
     // This is the main execution loop for the user control program.
