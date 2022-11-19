@@ -36,6 +36,14 @@ competition Competition;
 
 // define your global instances of motors and other devices here
 
+void screenInit(){
+  Brain.Screen.drawRectangle(0, 0, 240, 272, yellow);
+  Brain.Screen.printAt(20,50,"Half1()");
+  Brain.Screen.drawRectangle(0, 240, 200, 270, blue);
+  Brain.Screen.printAt(260,50,"Half2()");
+}
+
+
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
@@ -55,19 +63,23 @@ void drive(int lS, int rS){
   MotorRB.spin(forward,rS,percent);
 }
 
+bool pneu_rev=1;
+
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-  Pneu1.set(true);
-  Pneu2.set(true);
+  Pneu1.set(pneu_rev==true);
+  Pneu2.set(pneu_rev==true);
 
   MotorOut.setBrake(brake);
+  MotorF1.setBrake(coast);
+  MotorF2.setBrake(coast);
 
-  MotorLF.setVelocity(50, percent);
-  MotorLB.setVelocity(50, percent);
-  MotorRF.setVelocity(50, percent);
-  MotorRB.setVelocity(50, percent);
+  MotorLF.setVelocity(60, percent);
+  MotorLB.setVelocity(60, percent);
+  MotorRF.setVelocity(60, percent);
+  MotorRB.setVelocity(60, percent);
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
@@ -83,12 +95,41 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
+enum auton_mode{
+  half2,
+  half1,
+  progsklz
+}autonMode=progsklz;
+
+void switchAlliance(){
+  if(Brain.Screen.xPosition()<240){
+    Brain.Screen.drawCircle(50, 200, 40, green);
+    autonMode=half1;
+  }
+  else{
+    autonMode=half2;
+    Brain.Screen.drawCircle(50, 200, 40, blue);
+  }
+}
+
 void autonomous(void) {
-
-  // auton::Half2();
-
+  Brain.resetTimer();
+  switch(autonMode){
+    case half2:
+  auton::Half2();
+    break;
+    case half1:
   auton::Half1();
   auton::Half1Discs();
+    break;
+    case progsklz:
+  auton::ProgSklz();
+    break;
+    default:
+    break;
+  }
+  // MotorF1.spin(forward,100,percent);
+  // MotorF2.spin(forward,100,percent);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -155,7 +196,7 @@ void usercontrol(void) {
   int FWSpin=0;
   // User control code here, inside the loop
 
-  Controller1.ButtonA.pressed(fireRing);
+  int flySpeed=0;
 
   while (1) {
     // This is the main execution loop for the user control program.
@@ -173,18 +214,26 @@ void usercontrol(void) {
     else if(Controller1.ButtonL2.pressing()) spinIntk(-70);
     else spinIntk(0);
 
+
     if(Controller1.ButtonX.pressing()) FWSpin=1;
     if(Controller1.ButtonR1.pressing()) FWSpin=2;
     if(Controller1.ButtonR2.pressing()) FWSpin=0;
     if(FWSpin==1){
-      spinFly(100);
+      spinFly(flySpeed=100);
     }else if(FWSpin==2){
-      spinFly(75);
+      spinFly(flySpeed=75);
     }else{
-      spinFly(0);
+      MotorF1.spin(forward,0,percent);
+      MotorF2.spin(forward,0,percent);
     }
 
-    if(Controller1.ButtonRight.pressing()) Pneu1.set(false);
+    if(Controller1.ButtonA.pressing()) tripleFire(flySpeed);
+
+    if(Controller1.ButtonRight.pressing() && Controller1.ButtonY.pressing()){
+      Pneu2.set(pneu_rev==false);
+      wait(500,msec);
+      Pneu1.set(pneu_rev==false);
+    }
 
     wait(30, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
@@ -198,9 +247,12 @@ int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
-
   // Run the pre-autonomous function.
   pre_auton();
+
+  screenInit();
+
+  Brain.Screen.pressed(switchAlliance);
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
