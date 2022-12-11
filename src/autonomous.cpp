@@ -25,42 +25,71 @@ void _drive(int lS, int rS){
 }
 
 void driveInch(double inches){
-  double pi = 3.1415926;
-  double D = 4;
-  MotorLF.spinFor(forward, inches/pi/D, rev, false);
-  MotorLB.spinFor(forward, inches/pi/D, rev, false);
-  MotorRF.spinFor(forward, inches/pi/D, rev, false);
-  MotorRB.spinFor(forward, inches/pi/D, rev, true);
+  double x=0;
+  int speed;
+  const double kp=7;
+  const double margin=0.3;
+  double error=inches-x;
+  MotorRB.setRotation(0, rev);
+  while(fabs(error)>margin){
+    if(kp*error>50){
+      speed=50;
+    }else if(kp*error<-50){
+      speed=-50;
+    }else{
+      speed=kp*error;
+    }
+    _drive(speed,speed);
+    x=MotorRB.position(rev)*3.14159*4;
+    error=inches-x;
+  }
+  _drive(0,0);
 }
 
 void spinInch(double inches){ // spins clockwise for how many inches
-  double pi = 3.1415926;
-  int D = 4;
-  MotorLF.spinFor(forward, inches/pi/D, rev, false);
-  MotorLB.spinFor(forward, inches/pi/D, rev, false);
-  MotorRF.spinFor(reverse, inches/pi/D, rev, false);
-  MotorRB.spinFor(reverse, inches/pi/D, rev, true);
+  double x=0;
+  int speed;
+  const double kp=7;
+  const double margin=0.3;
+  double error=inches-x;
+  MotorLB.setRotation(0, rev);
+  while(fabs(error)>margin){
+    if(kp*error>50){
+      speed=50;
+    }else if(kp*error<-50){
+      speed=-50;
+    }else{
+      speed=kp*error;
+    }
+    _drive(speed,-speed);
+    x=MotorLB.position(rev)*3.14159*4;
+    error=inches-x;
+  }
+  _drive(0,0);
 }
 
 void auton::Half1Discs(){
-  // spinInch(-1);
-  driveInch(-5);
-  spinInch(10);
-  driveInch(-50);
-  spinInch(-13);
-  _spinFly(100);
-  driveInch(-3);
-  wait(2300,msec);
+  driveInch(-7);
+  spinInch(5);
+  driveInch(-30);
+  spinInch(-7.6);
+  // driveInch(-7);
+  for(int i=0; i<100; i++){
+    spinFly(100);
+    wait(40,msec);
+  }
   fireRing();
-  // spinFly(95);
-  driveInch(-3);
-  wait(400,msec);
+  for(int i=0; i<20; i++){
+    spinFly(89);
+    wait(40,msec);
+  }
+  fireRing();fireRing();fireRing();
+  for(int i=0; i<8; i++){
+    spinFly(89);
+    wait(40,msec);
+  }
   fireRing();
-  wait(400,msec);
-  fireRing();
-  wait(400,msec);
-  fireRing();
-  // wait(300,msec);
+  wait(50,msec);
   _spinFly(0);
 }
 
@@ -69,8 +98,8 @@ void auton::Half1(){
   _drive(20,20);
   wait(200, msec);
   _drive(5, 5);
-  spinIntk(40);
-  wait(650, msec);
+  spinIntk(-40);
+  wait(300, msec);
   spinIntk(0);
   _drive(0,0);
 
@@ -94,7 +123,7 @@ void auton::Half2(){
   driveInch(-10);
   spinInch(-9);
   driveInch(-50);
-  spinInch(14.2);
+  spinInch(11.5);
   driveInch(-3);
 
   _spinFly(100);
