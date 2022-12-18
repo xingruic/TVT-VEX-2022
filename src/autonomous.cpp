@@ -3,6 +3,8 @@
 #include "flywheel.h"
 #include "vex.h"
 
+// #define DO_DISKS_IN_AUTON
+
 using namespace vex;
 
 void _spinFly(int speed){
@@ -47,50 +49,31 @@ void driveInch(double inches){
 }
 
 void spinInch(double inches){ // spins clockwise for how many inches
-  double x=0;
-  int speed;
-  const double kp=7;
-  const double margin=0.3;
-  double error=inches-x;
-  MotorLB.setRotation(0, rev);
-  while(fabs(error)>margin){
-    if(kp*error>50){
-      speed=50;
-    }else if(kp*error<-50){
-      speed=-50;
-    }else{
-      speed=kp*error;
-    }
-    _drive(speed,-speed);
-    x=MotorLB.position(rev)*3.14159*4;
-    error=inches-x;
-  }
-  _drive(0,0);
+  setVel(30);
+  MotorLF.spinFor(forward, inches/3.14159/4, rev, false);
+  MotorLB.spinFor(forward, inches/3.14159/4, rev, false);
+  MotorRF.spinFor(reverse, inches/3.14159/4, rev, false);
+  MotorRB.spinFor(reverse, inches/3.14159/4, rev, true);
 }
 
 void auton::Half1Discs(){
+#ifdef DO_DISKS_IN_AUTON
   driveInch(-7);
-  spinInch(5);
-  driveInch(-30);
-  spinInch(-7.6);
+  spinInch(5.2);
+  driveInch(-40);
+  spinInch(-8);
   // driveInch(-7);
-  for(int i=0; i<100; i++){
-    spinFly(100);
-    wait(40,msec);
-  }
+  spinFlyForMsec(90,4000);
   fireRing();
-  for(int i=0; i<20; i++){
-    spinFly(89);
-    wait(40,msec);
-  }
-  fireRing();fireRing();fireRing();
-  for(int i=0; i<8; i++){
-    spinFly(89);
-    wait(40,msec);
-  }
+  spinFlyForMsec(96,3000);
   fireRing();
-  wait(50,msec);
+  spinFlyForMsec(96,500);
+  fireRing();
+  spinFlyForMsec(96,500);
+  fireRing();
+  wait(500,msec);
   _spinFly(0);
+#endif
 }
 
 void auton::Half1(){
@@ -109,41 +92,35 @@ void auton::Half1(){
 
 void auton::Half2(){
   // roller
-  driveInch(-32.5);
-  spinInch(-15);
+  driveInch(-24);
+  spinInch(-10);
   _drive(60,60);
-  wait(300,msec);
-  spinIntk(70);
-  wait(400,msec);
+  wait(200,msec);
+  _drive(5, 5);
+  spinIntk(-70);
+  wait(170,msec);
   _drive(0,0);
   wait(100,msec);
   spinIntk(0);
 
   // discs
-  driveInch(-10);
-  spinInch(-9);
-  driveInch(-50);
-  spinInch(11.5);
-  driveInch(-3);
-
-  _spinFly(100);
-  wait(2500,msec);
-  int oldFly=0;
-  while(MotorF2.velocity(percent)>100*0.8 && MotorF2.velocity(percent)>oldFly){
-    oldFly=MotorF2.velocity(percent);
-  }
+#ifdef DO_DISKS_IN_AUTON
+  driveInch(-5);
+  spinInch(-6);
+  driveInch(-40);
+  spinInch(10);
+  driveInch(-7);
+  spinFlyForMsec(90,4000);
   fireRing();
-  wait(400,msec);
-  oldFly=0;
-  while(MotorF2.velocity(percent)>100*0.8 && MotorF2.velocity(percent)>oldFly){
-    oldFly=MotorF2.velocity(percent);
-  }
+  spinFlyForMsec(96,3000);
   fireRing();
-  wait(400,msec);
+  spinFlyForMsec(96,500);
   fireRing();
-  wait(300,msec);
+  spinFlyForMsec(96,500);
+  fireRing();
+  wait(500,msec);
   _spinFly(0);
-
+#endif
   // // reset (for debugging)
   // spinInch(-3);
   // driveInch(50);

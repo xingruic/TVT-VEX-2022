@@ -62,7 +62,6 @@ void drive(int lS, int rS){
   MotorRF.spin(forward,rS,percent);
   MotorRB.spin(forward,rS,percent);
 }
-
 bool pneu_rev=1;
 
 void pre_auton(void) {
@@ -117,25 +116,25 @@ void autonomous(void) {
   MotorLB.setBrake(coast);
   MotorRF.setBrake(coast);
   MotorRB.setBrake(coast);
-  // Brain.resetTimer();
-  // switch(autonMode){
-  //   case half2:
-  // auton::Half2();
-  //   break;
-  //   case half1:
-  // auton::Half1();
-  // auton::Half1Discs();
-  //   break;
-  //   case progsklz:
-  // auton::ProgSklz();
-  //   break;
-  //   default:
-  //   break;
-  // }
-  // // MotorF1.spin(forward,100,percent);
-  // // MotorF2.spin(forward,100,percent);
+  Brain.resetTimer();
+  switch(autonMode){
+    case half2:
+  auton::Half2();
+    break;
+    case half1:
   auton::Half1();
   auton::Half1Discs();
+    break;
+    case progsklz:
+  auton::ProgSklz();
+    break;
+    default:
+    break;
+  }
+  // MotorF1.spin(forward,100,percent);
+  // MotorF2.spin(forward,100,percent);
+  // auton::Half1();
+  // auton::Half1Discs();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -220,7 +219,7 @@ void usercontrol(void) {
 
     splitDrive();
     
-    if(Controller1.ButtonL1.pressing()) spinIntk(70);
+    if(Controller1.ButtonL1.pressing()) spinIntk(100);
     else if(Controller1.ButtonL2.pressing()) spinIntk(-50);
     else spinIntk(0);
 
@@ -231,7 +230,7 @@ void usercontrol(void) {
     if(FWSpin==1){
       spinFly(flySpeed=100);
     }else if(FWSpin==2){
-      spinFly(flySpeed=70);
+      spinFly(flySpeed=65);
     }else{
       MotorF1.spin(forward,0,percent);
       MotorF2.spin(forward,0,percent);

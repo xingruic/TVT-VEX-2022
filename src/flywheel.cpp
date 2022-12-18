@@ -47,6 +47,16 @@ void spinFly(int speed){
   Brain.Screen.printAt(30,30,"flywheel speed: %.2f                  ", MotorF2.velocity(percent));
 }
 
+void spinFlyForMsec(int speed, int msecs, bool stopAfterwards){
+  for(int i=0; i<msecs/20; i++){
+    spinFly(speed);
+    wait(20,msec);
+  }
+  if(stopAfterwards){
+    MotorF1.spin(forward,0,percent);
+    MotorF2.spin(forward,0,percent);
+  }
+}
 
 // fire ring
 void fireRing(){
