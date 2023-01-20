@@ -3,13 +3,19 @@
 #include "flywheel.h"
 #include "vex.h"
 
-// #define DO_DISKS_IN_AUTON
-
 using namespace vex;
 
 void _spinFly(int speed){
   MotorF1.spin(forward,speed,percent);
   MotorF2.spin(forward,speed,percent);
+}
+
+void spinFlyFor(int speed,int msecs){
+  double delay=10;
+  for(int i=0; i<msecs/delay; i++){
+    spinFly(speed);
+    wait(delay,msec);
+  }
 }
 
 void setVel(int vel){
@@ -26,170 +32,123 @@ void _drive(int lS, int rS){
   MotorRB.spin(forward,rS,percent);
 }
 
-void driveInch(double inches){
-  double x=0;
-  int speed;
-  const double kp=7;
-  const double margin=0.3;
-  double error=inches-x;
-  MotorRB.setRotation(0, rev);
-  while(fabs(error)>margin){
-    if(kp*error>50){
-      speed=50;
-    }else if(kp*error<-50){
-      speed=-50;
-    }else{
-      speed=kp*error;
-    }
-    _drive(speed,speed);
-    x=MotorRB.position(rev)*3.14159*4;
-    error=inches-x;
+void driveInch(float target){
+  float x = 0.0;
+  float error = target - x;
+  float speed = 50.0;
+  float accuracy = 0.2;
+  MotorLB.setRotation(0, rev);
+  while (fabs(error) > accuracy) {
+    _drive(speed * fabs(error) / error, speed * fabs(error) / error);
+    wait(10,msec);
+    x = MotorLB.position(rev) * 3.14 * 3.25;
+    error = target - x;
   }
   _drive(0,0);
 }
 
-void spinInch(double inches){ // spins clockwise for how many inches
-  setVel(30);
-  MotorLF.spinFor(forward, inches/3.14159/4, rev, false);
-  MotorLB.spinFor(forward, inches/3.14159/4, rev, false);
-  MotorRF.spinFor(reverse, inches/3.14159/4, rev, false);
-  MotorRB.spinFor(reverse, inches/3.14159/4, rev, true);
+void gyroSpin(float target){
+  Gyro.setRotation(0.0, degrees);
+  float kp = 1.0;
+  float heading = 0.0;
+  float error = target - heading;
+  float speed = kp * error;
+  float accuracy = 0.5;
+  float bias = 1;
+  while (fabs(error) > accuracy) {
+    speed = kp * error + bias * fabs(error) / error;
+    _drive(speed, -speed);
+    wait(5,msec);
+    heading = Gyro.rotation(degrees);
+    error = target - heading;
+    Brain.Screen.printAt(1, 20, "heading = %.2f  ", heading);
+  }
+  _drive(0,0);
+}
+
+void auton::driveVolts(float lS, float rS){
+  MotorLF.spin(forward,lS,voltageUnits::mV);
+  MotorLB.spin(forward,lS,voltageUnits::mV);
+  MotorRF.spin(forward,rS,voltageUnits::mV);
+  MotorRB.spin(forward,rS,voltageUnits::mV);
 }
 
 void auton::Half1Discs(){
-#ifdef DO_DISKS_IN_AUTON
-  driveInch(-7);
-  spinInch(5.2);
-  driveInch(-40);
-  spinInch(-8);
-  // driveInch(-7);
-  spinFlyForMsec(90,4000);
+  // driveInch(-5);
+  // gyroSpin(-135);
+  // spinIntk(100);
+  // driveInch(15);
+  // wait(2000,msec);
+  driveInch(-5);
+  gyroSpin(-12);
+  spinFlyFor(87,3200);
   fireRing();
-  spinFlyForMsec(96,3000);
+  spinFlyFor(87,1000);
   fireRing();
-  spinFlyForMsec(96,500);
-  fireRing();
-  spinFlyForMsec(96,500);
-  fireRing();
-  wait(500,msec);
   _spinFly(0);
-#endif
+  gyroSpin(-125);
+  driveInch(23);
+  spinIntk(100);
+  wait(500,msec);
+  driveInch(-5);
+  wait(1.5,sec);
+  driveInch(10);
+  wait(1.5,sec);
+  driveInch(5);
+  gyroSpin(90);
+
+  Controller1.rumble("-");
 }
 
 void auton::Half1(){
-  // roller
-  _drive(20,20);
-  wait(200, msec);
-  _drive(5, 5);
   spinIntk(-40);
-  wait(300, msec);
-  spinIntk(0);
+  wait(100,msec);
+  driveVolts(3000, 3000);
+  wait(550,msec);
   _drive(0,0);
-
-  // NOTE: please do NOT add additional code here, I re-used this code for Half2()
-  // if you want the discs code, call Half1Discs() after this
+  spinIntk(0);
 }
 
 void auton::Half2(){
-  // roller
-  driveInch(-24);
-  spinInch(-10);
-  _drive(60,60);
-  wait(200,msec);
-  _drive(5, 5);
-  spinIntk(-70);
-  wait(170,msec);
-  _drive(0,0);
+  driveInch(17);
+  // wait(200,msec);
+  gyroSpin(90);
+  // wait(200,msec);
+  driveInch(3);
+  spinIntk(-40);
   wait(100,msec);
+  driveVolts(100, 100);
+  _spinFly(86);
+  wait(550,msec);
+  _drive(0,0);
   spinIntk(0);
-
-  // discs
-#ifdef DO_DISKS_IN_AUTON
-  driveInch(-5);
-  spinInch(-6);
-  driveInch(-40);
-  spinInch(10);
-  driveInch(-7);
-  spinFlyForMsec(90,4000);
+  driveInch(-4);
+  // wait(200,msec);
+  gyroSpin(2.5);
+  spinFlyFor(84,1000);
   fireRing();
-  spinFlyForMsec(96,3000);
+  spinFlyFor(84,1000);
   fireRing();
-  spinFlyForMsec(96,500);
-  fireRing();
-  spinFlyForMsec(96,500);
-  fireRing();
-  wait(500,msec);
   _spinFly(0);
-#endif
-  // // reset (for debugging)
-  // spinInch(-3);
-  // driveInch(50);
+  gyroSpin(125);
+  spinIntk(100);
+  // wait(200,msec);
+  driveInch(75);
+  // wait(200,msec);
+  _spinFly(80);
+  driveInch(-10);
+  // wait(200,msec);
+  gyroSpin(-97);
+  spinFlyFor(80,1000);
+  fireRing();
+  spinFlyFor(83,1000);
+  fireRing();
+  spinFlyFor(83,1000);
+  fireRing();
+  spinFly(0);
+  Controller1.rumble("-");
 }
 
 void auton::ProgSklz(){
-  // two rollers + 1 disk
-  _drive(20,20);
-  wait(200, msec);
-  _drive(5, 5);
-  spinIntk(40);
-  wait(800, msec);
-  spinIntk(0);
-  _drive(0,0);
-
-  driveInch(-10);
-  spinInch(13);
-  spinIntk(90);
-  driveInch(30);
-  driveInch(-10);
-  spinInch(-13);
-  driveInch(-23);
-  spinInch(13);
-  spinIntk(0);
-  driveInch(6);
-  _drive(20,20);
-  wait(200, msec);
-  _drive(5, 5);
-  spinIntk(40);
-  wait(1400, msec);
-  spinIntk(0);
-  _drive(0,0);
-
-
-  // drive and shoot
-  driveInch(-9);
-  spinInch(-13);
-  driveInch(-30);
-  spinInch(-1);
-  _spinFly(90);
-  wait(2300,msec);
-  int oldFly=0;
-  while(MotorF2.velocity(percent)>83*0.8 && MotorF2.velocity(percent)>oldFly){
-    oldFly=MotorF2.velocity(percent);
-  }
-  fireRing();
-  wait(500,msec);
-  while(MotorF2.velocity(percent)>80*0.8 && MotorF2.velocity(percent)>oldFly){
-    oldFly=MotorF2.velocity(percent);
-  }
-  fireRing();
-  wait(500,msec);
-  while(MotorF2.velocity(percent)>80*0.8 && MotorF2.velocity(percent)>oldFly){
-    oldFly=MotorF2.velocity(percent);
-  }
-  fireRing();
-  wait(500,msec);
-  fireRing();
-  wait(500,msec);
-  fireRing();
-  _spinFly(0);
-
-  driveInch(42);
-  spinInch(6);
-
-  // Uncomment this if you have to wait until last 10 seconds to launch in skillz contest
-  // while(Brain.Timer.time(seconds)<55) wait(1,sec);
-
-  Pneu2.set(false);
-  wait(500,msec);
-  Pneu1.set(false);
+  
 }

@@ -11,16 +11,17 @@
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
 // Controller1          controller                    
-// MotorIntk            motor         11              
-// MotorF1              motor         14              
-// MotorF2              motor         15              
-// MotorOut             motor         18              
+// MotorIntk            motor         3               
+// MotorF1              motor         12              
+// MotorF2              motor         13              
+// MotorOut             motor         19              
 // Pneu1                digital_out   A               
 // Pneu2                digital_out   B               
-// MotorLB              motor         20              
-// MotorRB              motor         19              
-// MotorRF              motor         1               
-// MotorLF              motor         2               
+// MotorLB              motor         11              
+// MotorRB              motor         20              
+// MotorRF              motor         2               
+// MotorLF              motor         1               
+// Gyro                 inertial      18              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -43,18 +44,6 @@ void screenInit(){
   Brain.Screen.printAt(260,50,"Half2()");
 }
 
-
-/*---------------------------------------------------------------------------*/
-/*                          Pre-Autonomous Functions                         */
-/*                                                                           */
-/*  You may want to perform some actions before the competition starts.      */
-/*  Do them in the following function.  You must return from this function   */
-/*  or the autonomous and usercontrol tasks will not be started.  This       */
-/*  function is only called once after the V5 has been powered on and        */
-/*  not every time that the robot is disabled.                               */
-/*---------------------------------------------------------------------------*/
-
-
 // give lSpeed and rSpeed in percent
 void drive(int lS, int rS){
   MotorLF.spin(forward,lS,percent);
@@ -62,11 +51,14 @@ void drive(int lS, int rS){
   MotorRF.spin(forward,rS,percent);
   MotorRB.spin(forward,rS,percent);
 }
+
 bool pneu_rev=1;
 
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+
+  // Competition.bStopAllTasksBetweenModes=true;
 
   Pneu1.set(true);
   Pneu2.set(true);
@@ -79,35 +71,22 @@ void pre_auton(void) {
   MotorLB.setVelocity(60, percent);
   MotorRF.setVelocity(60, percent);
   MotorRB.setVelocity(60, percent);
-
-  // All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...
 }
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              Autonomous Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
 
 enum auton_mode{
   half2,
   half1,
   progsklz
-}autonMode=progsklz;
+}autonMode=half1;
 
 void switchAlliance(){
   if(Brain.Screen.xPosition()<240){
-    Brain.Screen.drawCircle(50, 200, 40, green);
+    Brain.Screen.drawCircle(100, 200, 40, green);
     autonMode=half1;
   }
   else{
     autonMode=half2;
-    Brain.Screen.drawCircle(50, 200, 40, blue);
+    Brain.Screen.drawCircle(100, 200, 40, blue);
   }
 }
 
@@ -131,21 +110,7 @@ void autonomous(void) {
     default:
     break;
   }
-  // MotorF1.spin(forward,100,percent);
-  // MotorF2.spin(forward,100,percent);
-  // auton::Half1();
-  // auton::Half1Discs();
 }
-
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              User Control Task                            */
-/*                                                                           */
-/*  This task is used to control your robot during the user control phase of */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
 
 void singleRightDrive(){
   int LR = Controller1.Axis1.position();
@@ -208,19 +173,10 @@ void usercontrol(void) {
   int flySpeed=0;
 
   while (1) {
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
-
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
-
     splitDrive();
     
     if(Controller1.ButtonL1.pressing()) spinIntk(100);
-    else if(Controller1.ButtonL2.pressing()) spinIntk(-50);
+    else if(Controller1.ButtonL2.pressing()) spinIntk(-30);
     else spinIntk(0);
 
 
@@ -230,13 +186,13 @@ void usercontrol(void) {
     if(FWSpin==1){
       spinFly(flySpeed=100);
     }else if(FWSpin==2){
-      spinFly(flySpeed=65);
+      spinFly(flySpeed=80);
     }else{
       MotorF1.spin(forward,0,percent);
       MotorF2.spin(forward,0,percent);
     }
-
-    if(Controller1.ButtonA.pressing()) tripleFire(flySpeed);
+    
+    if(Controller1.ButtonA.pressing()) tripleFire();
 
     if(Controller1.ButtonRight.pressing() && Controller1.ButtonY.pressing()){
       expand();
@@ -247,9 +203,6 @@ void usercontrol(void) {
   }
 }
 
-//
-// Main will set up the competition functions and callbacks.
-//
 int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);

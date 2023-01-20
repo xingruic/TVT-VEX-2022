@@ -6,6 +6,7 @@ namespace auton{
   void Half1Discs(); // additional module for half1() that launches discs
   void Half2(); // setup in corner of tile
   void ProgSklz();
+  void driveVolts(float lS, float rS);
 }
 
 #endif
