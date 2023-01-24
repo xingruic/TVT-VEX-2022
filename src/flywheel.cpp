@@ -18,12 +18,20 @@ void spinFly(int speed){
   Brain.Screen.printAt(30,30,"flywheel speed: %.2f                  ", MotorF2.velocity(percent));
 }
 
+<<<<<<< Updated upstream
 int spinFlyGlobal(void *speed){
   while(true){
     spinFly(*(int*)speed);
     wait(30,msec);
   }
   return 0;
+=======
+void spinFlyForMsec(int speed,int msecs){
+  for(int i=0; i<msecs/20; i++){
+    spinFly(speed);
+    wait(20,msec);
+  }
+>>>>>>> Stashed changes
 }
 
 // fire ring
