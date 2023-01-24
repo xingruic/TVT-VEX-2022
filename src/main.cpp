@@ -121,8 +121,8 @@ void autonomous(void) {
 void singleRightDrive(){
   int LR = Controller1.Axis1.position();
   int FB = Controller1.Axis2.position();
-  double lD = LR*0.7;
-  double rD = -LR*0.7;
+  double lD = LR*0.9;
+  double rD = -LR*0.9;
   lD+=FB;
   rD+=FB;
   if(lD>100) lD=100;
@@ -136,8 +136,8 @@ void singleRightDrive(){
 void singleLeftDrive(){
   int LR = Controller1.Axis4.position();
   int FB = Controller1.Axis3.position();
-  double lD = LR*0.5;
-  double rD = -LR*0.5;
+  double lD = LR*0.9;
+  double rD = -LR*0.9;
   lD+=FB;
   rD+=FB;
   if(lD>100) lD=100;
@@ -151,8 +151,8 @@ void singleLeftDrive(){
 void splitDrive(){
   int LR = Controller1.Axis1.position();
   int FB = Controller1.Axis3.position();
-  double lD = LR*0.7;
-  double rD = -LR*0.7;
+  double lD = LR*0.9;
+  double rD = -LR*0.9;
   lD+=FB;
   rD+=FB;
   if(lD>100) lD=100;
@@ -191,7 +191,7 @@ void usercontrol(void) {
     if(FWSpin==1){
       spinFly(flySpeed=100);
     }else if(FWSpin==2){
-      spinFly(flySpeed=80);
+      spinFly(flySpeed=90);
     }else{
       MotorF1.spin(forward,0,percent);
       MotorF2.spin(forward,0,percent);
