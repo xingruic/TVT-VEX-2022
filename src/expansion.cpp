@@ -6,7 +6,7 @@ using namespace vex;
 int expand_cnt=0;
 
 void expand(){
-  Pneu2.set(false);
+  Pneu1.set(true);
   wait(500,msec);
-  Pneu1.set(false);
+  Pneu2.set(true);
 }

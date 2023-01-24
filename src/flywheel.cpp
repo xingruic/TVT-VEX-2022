@@ -14,7 +14,7 @@ void spinFly(int speed){
   float vel=MotorF1.velocity(percent);
   float error=speed-vel;
   const float kp=0.025;
-  spinFlyVolts((speed+kp*fmax(0,error))*120);
+  spinFlyVolts((speed+kp*error)*120);
   Brain.Screen.printAt(30,30,"flywheel speed: %.2f                  ", MotorF2.velocity(percent));
 }
 
@@ -35,12 +35,15 @@ int spinFlyGlobal(void *speed){
 //   MotorOut.spin(forward, 0, percent);
 // }
 
-// fire ring using pneumatic
+bool firing=false;
 void fireRing(){
+  if(firing) return;
+  firing=true;
   MotorOut.spin(fwd,12000,voltageUnits::mV);
-  wait(130,msec);
+  wait(110,msec);
   MotorOut.spin(reverse,12000,voltageUnits::mV);
-  wait(200,msec);
+  wait(300,msec);
+  firing=false;
 }
 
 void tripleFire(){

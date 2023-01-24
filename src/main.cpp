@@ -60,10 +60,10 @@ void pre_auton(void) {
 
   // Competition.bStopAllTasksBetweenModes=true;
 
-  Pneu1.set(true);
-  Pneu2.set(true);
+  Pneu1.set(false);
+  Pneu2.set(false);
 
-  MotorOut.setBrake(brake);
+  MotorOut.setBrake(hold);
   MotorF1.setBrake(coast);
   MotorF2.setBrake(coast);
 
@@ -110,6 +110,12 @@ void autonomous(void) {
     default:
     break;
   }
+  Brain.Screen.clearScreen();
+  Brain.Screen.drawRectangle(20, 20, 350, 100, blue);
+  for(int i=0; i<100; i++){
+    wait(10,msec);
+    Brain.Screen.printAt(rand()*350.0/RAND_MAX, rand()*150.0/RAND_MAX," wait what ");
+  }
 }
 
 void singleRightDrive(){
@@ -145,15 +151,14 @@ void singleLeftDrive(){
 void splitDrive(){
   int LR = Controller1.Axis1.position();
   int FB = Controller1.Axis3.position();
-  double lD = LR*0.5;
-  double rD = -LR*0.5;
+  double lD = LR*0.7;
+  double rD = -LR*0.7;
   lD+=FB;
   rD+=FB;
   if(lD>100) lD=100;
   if(rD>100) rD=100;
   if(lD<-100) lD=-100;
   if(rD<-100) rD=-100;
-
   drive(lD, rD);
 }
 
@@ -176,9 +181,9 @@ void usercontrol(void) {
     splitDrive();
     
     if(Controller1.ButtonL1.pressing()) spinIntk(100);
-    else if(Controller1.ButtonL2.pressing()) spinIntk(-30);
+    else if(Controller1.ButtonL2.pressing())
+      spinIntk(-30);
     else spinIntk(0);
-
 
     if(Controller1.ButtonX.pressing()) FWSpin=1;
     if(Controller1.ButtonR1.pressing()) FWSpin=2;
@@ -192,10 +197,16 @@ void usercontrol(void) {
       MotorF2.spin(forward,0,percent);
     }
     
-    if(Controller1.ButtonA.pressing()) tripleFire();
+    if(Controller1.ButtonA.pressing()) fireRing();
 
     if(Controller1.ButtonRight.pressing() && Controller1.ButtonY.pressing()){
       expand();
+      Brain.Screen.clearScreen();
+      Brain.Screen.drawRectangle(20, 20, 350, 100, blue);
+      for(int i=0; i<100; i++){
+        wait(10,msec);
+        Brain.Screen.printAt(rand()*350.0/RAND_MAX, rand()*150.0/RAND_MAX," pneumatics fired \n                     ");
+      }
     }
 
     wait(30, msec); // Sleep the task for a short amount of time to

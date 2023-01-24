@@ -35,11 +35,11 @@ void _drive(int lS, int rS){
 void driveInch(float target){
   float x = 0.0;
   float error = target - x;
-  float speed = 50.0;
+  float speed = 27.0;
   float accuracy = 0.2;
   MotorLB.setRotation(0, rev);
   while (fabs(error) > accuracy) {
-    _drive(speed * fabs(error) / error, speed * fabs(error) / error);
+    _drive(speed * error, speed * error);
     wait(10,msec);
     x = MotorLB.position(rev) * 3.14 * 3.25;
     error = target - x;
@@ -49,7 +49,7 @@ void driveInch(float target){
 
 void gyroSpin(float target){
   Gyro.setRotation(0.0, degrees);
-  float kp = 1.0;
+  float kp = 1.5;
   float heading = 0.0;
   float error = target - heading;
   float speed = kp * error;
@@ -74,29 +74,14 @@ void auton::driveVolts(float lS, float rS){
 }
 
 void auton::Half1Discs(){
-  // driveInch(-5);
-  // gyroSpin(-135);
-  // spinIntk(100);
-  // driveInch(15);
-  // wait(2000,msec);
   driveInch(-5);
-  gyroSpin(-12);
-  spinFlyFor(87,3200);
-  fireRing();
-  spinFlyFor(87,1000);
-  fireRing();
-  _spinFly(0);
-  gyroSpin(-125);
-  driveInch(23);
+  gyroSpin(-135);
+  spinIntk(-30);
+  driveInch(25);
   spinIntk(100);
-  wait(500,msec);
-  driveInch(-5);
-  wait(1.5,sec);
-  driveInch(10);
-  wait(1.5,sec);
   driveInch(5);
-  gyroSpin(90);
-
+  driveInch(-5);
+  gyroSpin(150);
   Controller1.rumble("-");
 }
 
@@ -115,37 +100,31 @@ void auton::Half2(){
   gyroSpin(90);
   // wait(200,msec);
   driveInch(3);
-  spinIntk(-40);
+  spinIntk(-20);
   wait(100,msec);
   driveVolts(100, 100);
-  _spinFly(86);
+  // _spinFly(86);
   wait(550,msec);
   _drive(0,0);
   spinIntk(0);
   driveInch(-4);
-  // wait(200,msec);
-  gyroSpin(2.5);
-  spinFlyFor(84,1000);
+  gyroSpin(-90);
+  driveInch(-28);
+  _spinFly(40);
+  wait(1,sec);
   fireRing();
-  spinFlyFor(84,1000);
+  wait(1,sec);
   fireRing();
   _spinFly(0);
-  gyroSpin(125);
+  gyroSpin(-92);
   spinIntk(100);
-  // wait(200,msec);
-  driveInch(75);
-  // wait(200,msec);
-  _spinFly(80);
-  driveInch(-10);
-  // wait(200,msec);
-  gyroSpin(-97);
-  spinFlyFor(80,1000);
-  fireRing();
-  spinFlyFor(83,1000);
-  fireRing();
-  spinFlyFor(83,1000);
-  fireRing();
-  spinFly(0);
+  driveInch(30);
+  gyroSpin(45);
+  _spinFly(40);
+  wait(2,sec);
+  tripleFire();
+  _spinFly(0);
+  spinIntk(0);
   Controller1.rumble("-");
 }
 
