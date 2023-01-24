@@ -75,13 +75,21 @@ void auton::driveVolts(float lS, float rS){
 
 void auton::Half1Discs(){
   driveInch(-5);
-  gyroSpin(-135);
+  gyroSpin(-145);
   spinIntk(-30);
   driveInch(25);
   spinIntk(100);
-  driveInch(5);
+  _spinFly(90);
+  driveInch(10);
+  wait(100,msec);
   driveInch(-5);
-  gyroSpin(150);
+  gyroSpin(80);
+  spinFlyFor(90, 2000);
+  fireRing();
+  spinFlyFor(90, 1000);
+  fireRing();
+  spinFlyFor(90, 1000);
+  fireRing();
   Controller1.rumble("-");
 }
 
