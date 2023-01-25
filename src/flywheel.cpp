@@ -14,7 +14,7 @@ void spinFlyVolts(const int &mVolts) {
 void spinFly(int speed) {
   float vel = MotorF1.velocity(percent);
   float error = speed - vel;
-  const float kp = 0.025;
+  const float kp = 0.02;
   spinFlyVolts((speed + kp * error) * 120);
   Brain.Screen.printAt(30, 30, "flywheel speed: %.2f                  ",
                        MotorF2.velocity(percent));
@@ -42,7 +42,7 @@ void fireRing() {
     return;
   firing = true;
   MotorOut.spin(fwd, 12000, voltageUnits::mV);
-  wait(110, msec);
+  wait(200, msec);
   MotorOut.spin(reverse, 12000, voltageUnits::mV);
   wait(300, msec);
   firing = false;

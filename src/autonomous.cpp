@@ -53,7 +53,7 @@ void gyroSpin(float target){
   float heading = 0.0;
   float error = target - heading;
   float speed = kp * error;
-  float accuracy = 0.5;
+  float accuracy = 0.2;
   float bias = 1;
   while (fabs(error) > accuracy) {
     speed = kp * error + bias * fabs(error) / error;
@@ -75,15 +75,26 @@ void auton::driveVolts(float lS, float rS){
 
 void auton::Half1Discs(){
   driveInch(-5);
-  gyroSpin(-145);
-  spinIntk(-30);
-  driveInch(25);
+  wait(200,msec);
+  gyroSpin(-10);
+  spinFlyFor(93, 2000);
+  fireRing();
+  spinFlyFor(93, 1000);
+  fireRing();
+  _spinFly(0);
+  gyroSpin(-125);
+  spinIntk(-20);
+  driveInch(20);
   spinIntk(100);
+  driveInch(10);
+  wait(500,msec);
   _spinFly(90);
   driveInch(10);
-  wait(100,msec);
-  driveInch(-5);
-  gyroSpin(80);
+  wait(500,msec);
+  driveInch(10);
+  wait(500,msec);
+  driveInch(-3);
+  gyroSpin(90);
   spinFlyFor(90, 2000);
   fireRing();
   spinFlyFor(90, 1000);
@@ -94,6 +105,7 @@ void auton::Half1Discs(){
 }
 
 void auton::Half1(){
+  _spinFly(90);
   spinIntk(-40);
   wait(100,msec);
   driveVolts(3000, 3000);
