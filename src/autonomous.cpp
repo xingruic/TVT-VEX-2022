@@ -51,17 +51,20 @@ void gyroSpin(float target){
   Gyro.setRotation(0.0, degrees);
   float kp = 1.5;
   float heading = 0.0;
-  float error = target - heading;
+  float error = target-heading;
   float speed = kp * error;
-  float accuracy = 0.2;
+  float accuracy = 0.5;
   float bias = 1;
-  while (fabs(error) > accuracy) {
+  int cnt=3;
+  while (cnt>0) {
+    if(fabs(error)<accuracy) cnt--;
+    else cnt=3;
     speed = kp * error + bias * fabs(error) / error;
     _drive(speed, -speed);
     wait(5,msec);
     heading = Gyro.rotation(degrees);
     error = target - heading;
-    Brain.Screen.printAt(1, 20, "heading = %.2f  ", heading);
+    Brain.Screen.printAt(1, 20, "heading = %.2f     ", heading);
   }
   _drive(0,0);
 }
@@ -73,78 +76,73 @@ void auton::driveVolts(float lS, float rS){
   MotorRB.spin(forward,rS,voltageUnits::mV);
 }
 
-void auton::Half1Discs(){
-  driveInch(-5);
-  wait(200,msec);
-  gyroSpin(-10);
-  spinFlyFor(93, 2000);
-  fireRing();
-  spinFlyFor(93, 1000);
-  fireRing();
-  _spinFly(0);
-  gyroSpin(-125);
-  spinIntk(-20);
-  driveInch(20);
-  spinIntk(100);
-  driveInch(10);
-  wait(500,msec);
-  _spinFly(90);
-  driveInch(10);
-  wait(500,msec);
-  driveInch(10);
-  wait(500,msec);
-  driveInch(-3);
-  gyroSpin(90);
-  spinFlyFor(90, 2000);
-  fireRing();
-  spinFlyFor(90, 1000);
-  fireRing();
-  spinFlyFor(90, 1000);
-  fireRing();
-  Controller1.rumble("-");
-}
-
 void auton::Half1(){
-  _spinFly(90);
+  _spinFly(83);
   spinIntk(-40);
   wait(100,msec);
   driveVolts(3000, 3000);
   wait(550,msec);
   _drive(0,0);
   spinIntk(0);
+  driveInch(-5);
+  gyroSpin(-7);
+  spinFlyFor(82, 1400);
+  fireRing();
+  spinFlyFor(82, 1400);
+  fireRing();
+  gyroSpin(-135);
+  spinIntk(100);
+  _spinFly(73);
+  driveInch(23);
+  wait(400,msec);
+  driveInch(12);
+  wait(400,msec);
+  driveInch(12);
+  wait(400,msec);
+  gyroSpin(100);
+  spinFlyFor(75, 200);
+  fireRing();
+  spinFlyFor(75, 1400);
+  fireRing();
+  spinFlyFor(75, 1400);
+  fireRing();
+  fireRing();
+  Controller1.rumble("-");
 }
 
 void auton::Half2(){
+  // _spinFly(100);
+  // fireRing();
+  // _spinFly(30);
+  // fireRing();
   driveInch(17);
-  // wait(200,msec);
-  gyroSpin(90);
-  // wait(200,msec);
-  driveInch(3);
+  _spinFly(80);
+  gyroSpin(94);
+  driveInch(4);
   spinIntk(-20);
   wait(100,msec);
-  driveVolts(100, 100);
-  // _spinFly(86);
-  wait(550,msec);
-  _drive(0,0);
+  driveVolts(1000, 1000);
+  wait(500,msec);
   spinIntk(0);
   driveInch(-4);
-  gyroSpin(-90);
-  driveInch(-28);
-  _spinFly(40);
-  wait(1,sec);
+  gyroSpin(12.5);
+  spinFlyFor(80, 500);
   fireRing();
-  wait(1,sec);
+  spinFlyFor(80, 1300);
   fireRing();
-  _spinFly(0);
-  gyroSpin(-92);
+  _spinFly(72);
+  gyroSpin(123.5);
   spinIntk(100);
-  driveInch(30);
-  gyroSpin(45);
-  _spinFly(40);
-  wait(2,sec);
-  tripleFire();
-  _spinFly(0);
-  spinIntk(0);
+  driveInch(50);
+  wait(500,msec);
+  driveInch(10);
+  gyroSpin(-85);
+  spinFlyFor(75, 400);
+  fireRing();
+  spinFlyFor(75, 1300);
+  fireRing();
+  spinFlyFor(75, 1300);
+  fireRing();
   Controller1.rumble("-");
 }
 

@@ -20,6 +20,11 @@ motor MotorRB = motor(PORT20, ratio18_1, true);
 motor MotorRF = motor(PORT2, ratio18_1, true);
 motor MotorLF = motor(PORT1, ratio18_1, false);
 inertial Gyro = inertial(PORT18);
+/*vex-vision-config:begin*/
+signature Vision__RED_ = signature (1, 8385, 10519, 9452, -863, -487, -675, 4, 0);
+signature Vision__BLUE_ = signature (2, -1927, -1293, -1610, 9067, 10601, 9834, 9.1, 0);
+vision Vision = vision (PORT8, 50, Vision__RED_, Vision__BLUE_);
+/*vex-vision-config:end*/
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

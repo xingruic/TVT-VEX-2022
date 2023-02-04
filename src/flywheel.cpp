@@ -41,10 +41,12 @@ void fireRing() {
   if (firing)
     return;
   firing = true;
+  MotorOut.resetPosition();
   MotorOut.spin(fwd, 12000, voltageUnits::mV);
-  wait(200, msec);
+  while(MotorOut.position(rev)<0.2) wait(10,msec);
   MotorOut.spin(reverse, 12000, voltageUnits::mV);
   wait(300, msec);
+  MotorOut.spin(reverse,0,voltageUnits::mV);
   firing = false;
 }
 
