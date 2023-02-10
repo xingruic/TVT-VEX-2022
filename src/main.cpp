@@ -250,35 +250,48 @@ void tankDrive(){
   drive(Controller1.Axis3.position(),Controller1.Axis2.position());
 }
 
+void tripleFire() {
+  int s=getFlyTarget();
+  setFlyTarget(100);
+  fireRing();
+  wait(100, msec);
+  fireRing();
+  wait(100, msec);
+  fireRing();
+  setFlyTarget(s);
+  wait(100, msec);
+}
+
 void usercontrol(void) {
   MotorLF.setBrake(brake);
   MotorRF.setBrake(brake);
   MotorRB.setBrake(brake);
   MotorLB.setBrake(brake);
+
+  MotorF1.setBrake(coast);
+  MotorF2.setBrake(coast);
   
   int FWSpin=0;
   // User control code here, inside the loop
 
-  int flySpeed=0;
+  Controller1.ButtonX.pressed(tripleFire);
+
+  task flyTask=task(flyControl);
 
   while (1) {
     splitDrive();
     
     if(Controller1.ButtonL1.pressing()) spinIntk(100);
     else if(Controller1.ButtonL2.pressing())
-      spinIntk(-30);
+      spinIntk(-100);
     else spinIntk(0);
 
-    if(Controller1.ButtonX.pressing()) FWSpin=1;
     if(Controller1.ButtonR1.pressing()) FWSpin=2;
     if(Controller1.ButtonR2.pressing()) FWSpin=0;
-    if(FWSpin==1){
-      spinFly(flySpeed=100);
-    }else if(FWSpin==2){
-      spinFly(flySpeed=70);
+    if(FWSpin==2){
+      setFlyTarget(70);
     }else{
-      MotorF1.spin(forward,0,percent);
-      MotorF2.spin(forward,0,percent);
+      setFlyTarget(0);
     }
     
     if(Controller1.ButtonA.pressing()) fireRing();

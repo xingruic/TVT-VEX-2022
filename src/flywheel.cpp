@@ -3,20 +3,44 @@
 
 using namespace vex;
 
+int flyTarget=0;
+
+void setFlyTarget(int s){
+  flyTarget=s;
+}
+
+int getFlyTarget(){
+  return flyTarget;
+}
+
 // give millivolts
 void spinFlyVolts(const int &mVolts) {
   MotorF1.spin(fwd, mVolts, voltageUnits::mV);
   MotorF2.spin(fwd, mVolts, voltageUnits::mV);
 }
 
+// int prevSpeed=0;
+
 // controls the flywheel speed. must be run constantly to work properly, so be
 // careful when using it in auton.
 void spinFly(int speed) {
+  // if(speed==0&&prevSpeed!=0){
+  //   MotorF1.spin(fwd,0,percent);
+  //   MotorF2.spin(fwd,0,percent);
+  // }
+  // prevSpeed=speed;
   float vel = MotorF1.velocity(percent);
   float error = speed - vel;
-  const float kp = 0.02;
+
+  if(speed==0) error=0;
+
+  float kp = 0.02;
+
+  if(error<40) kp=0.1;
+  else kp=0.02;
+
   spinFlyVolts((speed + kp * error) * 120);
-  Brain.Screen.printAt(30, 30, "flywheel speed: %.2f                  ",
+  Brain.Screen.printAt(30, 30, "flywheel speed: %.2f     ",
                        MotorF2.velocity(percent));
 }
 
@@ -43,18 +67,17 @@ void fireRing() {
   firing = true;
   MotorOut.resetPosition();
   MotorOut.spin(fwd, 12000, voltageUnits::mV);
-  while(MotorOut.position(rev)<0.2) wait(10,msec);
+  while(MotorOut.position(rev)<0.18) wait(10,msec);
   MotorOut.spin(reverse, 12000, voltageUnits::mV);
-  wait(300, msec);
+  wait(200, msec);
   MotorOut.spin(reverse,0,voltageUnits::mV);
   firing = false;
 }
 
-void tripleFire() {
-  fireRing();
-  wait(10, msec);
-  fireRing();
-  wait(10, msec);
-  fireRing();
-  wait(10, msec);
+int flyControl(){
+  while(1){
+    spinFly(flyTarget);
+    wait(20,msec);
+  }
+  return 0;
 }
