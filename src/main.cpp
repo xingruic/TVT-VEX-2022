@@ -138,7 +138,7 @@ enum auton_mode{
   half2,
   half1,
   progsklz
-}autonMode=half1;
+}autonMode=half2;
 
 void switchAlliance(){
   if(Brain.Screen.xPosition()<240){
@@ -250,18 +250,6 @@ void tankDrive(){
   drive(Controller1.Axis3.position(),Controller1.Axis2.position());
 }
 
-void tripleFire() {
-  int s=getFlyTarget();
-  setFlyTarget(100);
-  fireRing();
-  wait(100, msec);
-  fireRing();
-  wait(100, msec);
-  fireRing();
-  setFlyTarget(s);
-  wait(100, msec);
-}
-
 void usercontrol(void) {
   MotorLF.setBrake(brake);
   MotorRF.setBrake(brake);
@@ -274,8 +262,6 @@ void usercontrol(void) {
   int FWSpin=0;
   // User control code here, inside the loop
 
-  Controller1.ButtonX.pressed(tripleFire);
-
   task flyTask=task(flyControl);
 
   while (1) {
@@ -286,10 +272,16 @@ void usercontrol(void) {
       spinIntk(-100);
     else spinIntk(0);
 
+    if(Controller1.ButtonB.pressing()) FWSpin=3;
     if(Controller1.ButtonR1.pressing()) FWSpin=2;
+    if(Controller1.ButtonX.pressing()) FWSpin=1;
     if(Controller1.ButtonR2.pressing()) FWSpin=0;
-    if(FWSpin==2){
-      setFlyTarget(70);
+    if(FWSpin==3){
+      setFlyTarget(75);
+    }else if(FWSpin==2){
+      setFlyTarget(85);
+    }else if(FWSpin==1){
+      setFlyTarget(100);
     }else{
       setFlyTarget(0);
     }

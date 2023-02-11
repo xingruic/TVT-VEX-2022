@@ -36,10 +36,9 @@ void spinFly(int speed) {
 
   float kp = 0.02;
 
-  if(error<40) kp=0.1;
-  else kp=0.02;
+  if(error>20) error=1000;
 
-  spinFlyVolts((speed + kp * error) * 120);
+  spinFlyVolts(fmax(-100,fmin(100,speed + kp * error)) * 120);
   Brain.Screen.printAt(30, 30, "flywheel speed: %.2f     ",
                        MotorF2.velocity(percent));
 }
